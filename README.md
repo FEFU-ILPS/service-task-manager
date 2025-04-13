@@ -1,2 +1,2 @@
 # service-task-manager
-🔊 Bus interaction with audio processing functionality in the ILPS infrastructure
+💼 Менеджер задач по обработке аудио в инфраструктуре ILPS
