@@ -15,6 +15,6 @@ class Task(BaseORM):
     status = Column(Enum(Status), nullable=False, default=Status.CREATED)
     user_id = Column(UUID(as_uuid=True), nullable=False)
     text_id = Column(UUID(as_uuid=True), nullable=False)
-    result = Column(TEXT, nullable=False)
+    result = Column(TEXT, nullable=True, default=None)
     created_at = Column(DATETIME, nullable=False, default=lambda _: datetime.now(tz=timezone.utc))
     completed_at = Column(DATETIME, nullable=True, default=None)
