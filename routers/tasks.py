@@ -80,6 +80,12 @@ async def create_task(
     """Создаёт задачу на предобработку и транскрибирование аудиофайла.
     Возвращает UUID созданой задачи с ответом 200, выполняя её в фоне.
     """
+    if not file.filename.lower().endswith(".wav"):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file extension. Only .wav files are accepted.",
+        )
+
     created_task = Task(
         user_id=data.user_id,
         text_id=data.text_id,
