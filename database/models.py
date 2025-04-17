@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DATETIME, Column, Enum, TEXT
+from sqlalchemy import TIMESTAMP, Column, Enum, TEXT
 from sqlalchemy.dialects.postgresql import UUID
 
 from .engine import BaseORM
@@ -16,5 +16,5 @@ class Task(BaseORM):
     user_id = Column(UUID(as_uuid=True), nullable=False)
     text_id = Column(UUID(as_uuid=True), nullable=False)
     result = Column(TEXT, nullable=True, default=None)
-    created_at = Column(DATETIME, nullable=False, default=lambda _: datetime.now(tz=timezone.utc))
-    completed_at = Column(DATETIME, nullable=True, default=None)
+    created_at = Column(TIMESTAMP, nullable=False, default=lambda _: datetime.now(tz=timezone.utc))
+    completed_at = Column(TIMESTAMP, nullable=True, default=None)

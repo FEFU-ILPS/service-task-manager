@@ -41,8 +41,8 @@ def upgrade() -> None:
         sa.Column("user_id", sa.UUID(), nullable=False),
         sa.Column("text_id", sa.UUID(), nullable=False),
         sa.Column("result", sa.TEXT(), nullable=True),
-        sa.Column("created_at", sa.DATETIME(), nullable=False),
-        sa.Column("completed_at", sa.DATETIME(), nullable=True),
+        sa.Column("created_at", sa.TIMESTAMP(), nullable=False),
+        sa.Column("completed_at", sa.TIMESTAMP(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###
