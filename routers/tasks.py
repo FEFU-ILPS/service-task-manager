@@ -9,7 +9,7 @@ from database import get_db
 from database.models import Task
 from schemas.tasks import CreateTaskResponse, DetailTaskResponse, TasksResponse
 
-from .utils.tasks import spawn_task
+from .utils.tasks import start_task
 from io import BytesIO
 
 router = APIRouter()
@@ -69,6 +69,6 @@ async def create_task(
     await db.refresh(created_task)
 
     audio_file = BytesIO(await file.read())
-    background.add_task(spawn_task, audio_file, created_task, db)
+    background.add_task(start_task, audio_file, created_task, db)
 
     return CreateTaskResponse.model_validate(created_task)
