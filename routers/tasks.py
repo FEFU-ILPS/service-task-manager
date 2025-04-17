@@ -1,13 +1,29 @@
 from typing import Annotated, List
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Path,
+    UploadFile,
+    status,
+    Body,
+)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from database.models import Task
-from schemas.tasks import CreateTaskResponse, DetailTaskResponse, TasksResponse
+from schemas.tasks import (
+    CreateTaskResponse,
+    DetailTaskResponse,
+    TasksResponse,
+    TasksRequest,
+    CreateTaskRequest,
+    DetailTaskRequest,
+)
 
 from .utils.tasks import start_task
 from io import BytesIO
@@ -15,29 +31,33 @@ from io import BytesIO
 router = APIRouter()
 
 
-@router.get("/", summary="Получить список задач")
+# * GET был заменен на POST ради Body
+@router.post("/", summary="Получить список задач")
 async def get_tasks(
+    data: Annotated[TasksRequest, Body(...)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> List[TasksResponse]:
     """Получает список всех задач, когда либо созданных в системе ILPS."""
 
-    stmt = select(Task)
+    stmt = select(Task).where(Task.user_id == data.user_id)
     tasks = await db.execute(stmt)
     tasks = tasks.scalars().all()
 
     return [TasksResponse.model_validate(**task) for task in tasks]
 
 
-@router.get("/{uuid}", summary="Получить актуальную информацию о задаче")
+# * GET был заменен на POST ради Body
+@router.post("/{uuid}", summary="Получить актуальную информацию о задаче")
 async def get_task(
     uuid: Annotated[UUID, Path(...)],
+    data: Annotated[DetailTaskRequest, Body(...)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> DetailTaskResponse:
     """Получает текущую информацию по UUID указаной задачи.
     Возвращает полную информацию о задача.
     """
 
-    stmt = select(Task).where(Task.id == uuid)
+    stmt = select(Task).where((Task.id == uuid) & (Task.user_id == data.user_id))
     task = await db.execute(stmt)
     task = task.scalar_one_or_none()
 
@@ -50,9 +70,10 @@ async def get_task(
     return DetailTaskResponse.model_validate(task)
 
 
-@router.post("/", summary="Создать задачу на обработку аудио файла")
+@router.post("/transcribe", summary="Создать задачу на обработку аудио файла")
 async def create_task(
     file: UploadFile,
+    data: Annotated[CreateTaskRequest, Body(...)],
     background: BackgroundTasks,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> CreateTaskResponse:
@@ -60,8 +81,8 @@ async def create_task(
     Возвращает UUID созданой задачи с ответом 200, выполняя её в фоне.
     """
     created_task = Task(
-        user_id=None,
-        text_id=None,
+        user_id=data.user_id,
+        text_id=data.text_id,
     )
 
     db.add(created_task)

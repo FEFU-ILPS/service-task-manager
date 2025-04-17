@@ -11,6 +11,22 @@ TaskStatus = Annotated[Status, Field(description="Статуст выполне�
 TaskResult = Annotated[str, Field(description="Результат транскрибирования")]
 
 
+class TasksRequest(BaseModel):
+    """Данные, необходимые для получения задач."""
+
+    user_id: TaskUserID
+
+
+class CreateTaskRequest(TasksRequest):
+    """Данные, необходимые для создания задачи."""
+
+    text_id: TaskTextID
+
+
+class DetailTaskRequest(TasksRequest):
+    """Данные, необходимые для получения задач."""
+
+
 class CreateTaskResponse(BaseModel):
     """Данные, отправляемые в ответ на создание задачи."""
 
