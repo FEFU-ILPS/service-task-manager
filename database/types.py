@@ -4,9 +4,9 @@ from enum import Enum
 class Status(Enum):
     """Перечисление возможных значений статусов задачи."""
 
-    CREATED = 0
-    STARTED = 1
-    PREPROCESSING = 2
-    TRANSCRIBING = 3
-    COMPLETED = 4
-    FAILED = 5
+    CREATED = "created"
+    STARTED = "started"
+    PREPROCESSING = "preprocessing"
+    TRANSCRIBING = "transcribing"
+    COMPLETED = "completed"
+    FAILED = "failed"
