@@ -17,6 +17,7 @@ class TasksRequest(BaseModel):
     user_id: TaskUserID
 
 
+# *Не используется. Пришлось отказаться из-за особенностей загрузки файлов.
 class CreateTaskRequest(TasksRequest):
     """Данные, необходимые для создания задачи."""
 
