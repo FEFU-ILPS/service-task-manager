@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import TIMESTAMP, Column, Enum, TEXT
+from sqlalchemy import Column, Enum, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Index
 
@@ -16,10 +16,18 @@ class Task(BaseORM):
     status = Column(Enum(Status), nullable=False, default=Status.CREATED)
     user_id = Column(UUID(as_uuid=True), nullable=False)
     text_id = Column(UUID(as_uuid=True), nullable=False)
-    result = Column(TEXT, nullable=True, default=None)
-    created_at = Column(TIMESTAMP, nullable=False, default=lambda _: datetime.now(tz=timezone.utc))
-    completed_at = Column(TIMESTAMP, nullable=True, default=None)
-    comment = Column(TEXT, nullable=True, default=None)
+    result = Column(Text, nullable=True, default=None)
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda _: datetime.now(timezone.utc),
+    )
+    completed_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+        default=None,
+    )
+    comment = Column(Text, nullable=True, default=None)
 
     __table_args__ = (
         Index("task_text_id_idx", text_id, postgresql_using="hash"),
