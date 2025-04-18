@@ -22,12 +22,12 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
         db (AsyncSession): Обьект сессии базы данных.
     """
     try:
+        db.add(task_obj)
         task_obj.status = Status.STARTED
         await db.commit()
 
         preprocessed_audio_file = await preprocess_audio(audio_file, task_obj, db)
         text_transcription = await transcribe_audio(preprocessed_audio_file, task_obj, db)
-
         task_obj.status = Status.COMPLETED
         task_obj.result = text_transcription
         await db.commit()
