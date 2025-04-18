@@ -9,8 +9,8 @@ class DatabaseConfiguration(BaseSettings):
     POSTGRES_HOST: str
 
     # * Опциональные переменные
-    POSTGRES_USER: str = "service_texts"
-    POSTGRES_NAME: str = "texts"
+    POSTGRES_USER: str = "service_task_manager"
+    POSTGRES_NAME: str = "tasks"
     POSTGRES_PORT: int = 5432
 
     @property
