@@ -4,12 +4,15 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from database.types import Status
+from .examples import ID_EXAMPLES, STATUS_EXAMPLE, RESULT_EXAMPLE
 
-TaskID = Annotated[UUID, Field(description="Уникальный идентификатор")]
-TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя")]
-TaskTextID = Annotated[UUID, Field(description="Идентификатор текста")]
-TaskStatus = Annotated[Status, Field(description="Статуст выполнения")]
-TaskResult = Annotated[str, Field(description="Результат транскрибирования")]
+TaskID = Annotated[UUID, Field(description="Уникальный идентификатор", examples=ID_EXAMPLES)]
+TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя", examples=ID_EXAMPLES)]
+TaskTextID = Annotated[UUID, Field(description="Идентификатор текста", examples=ID_EXAMPLES)]
+TaskStatus = Annotated[Status, Field(description="Статуст выполнения", examples=STATUS_EXAMPLE)]
+TaskResult = Annotated[
+    str, Field(description="Результат транскрибирования", examples=RESULT_EXAMPLE)
+]
 
 
 class TasksRequest(BaseModel):
