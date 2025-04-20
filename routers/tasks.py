@@ -1,4 +1,3 @@
-from io import BytesIO
 from typing import Annotated, List
 from uuid import UUID
 
@@ -66,8 +65,7 @@ async def create_task(
     await db.commit()
     await db.refresh(created_task)
 
-    audio_file = BytesIO(await file.read())
-    background.add_task(start_task, audio_file, created_task, db)
+    background.add_task(start_task, file.file, created_task, db)
 
     return CreateTaskResponse.model_validate(created_task)
 
