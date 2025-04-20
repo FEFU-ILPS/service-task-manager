@@ -10,3 +10,4 @@ class Status(Enum):
     TRANSCRIBING = "transcribing"
     COMPLETED = "completed"
     FAILED = "failed"
+    UNKNOWN = "unknown"
