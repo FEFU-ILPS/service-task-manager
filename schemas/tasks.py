@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict
 from typing import Annotated
 from uuid import UUID
-from database.types import Status
 
+from pydantic import BaseModel, ConfigDict, Field
+
+from database.types import Status
 
 TaskID = Annotated[UUID, Field(description="Уникальный идентификатор")]
 TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя")]
