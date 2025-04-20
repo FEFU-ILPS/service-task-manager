@@ -60,7 +60,7 @@ async def stream_task(
             Defaults to True.
 
     Yields:
-        AsyncGenerator[str, None, Any]: Генератор строки состояния задачи.
+        AsyncGenerator[str, None]: Генератор строки состояния задачи.
     """
     last_status = Status.UNKNOWN
     db.add(task_obj)
