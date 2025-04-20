@@ -13,9 +13,11 @@ from fastapi import (
     Path,
     UploadFile,
     status,
+    Request,
 )
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sse_starlette.sse import EventSourceResponse
 
 from database import get_db
 from database.models import Task
@@ -27,7 +29,7 @@ from schemas.tasks import (
     TasksResponse,
 )
 
-from .utils.tasks import start_task
+from .utils.tasks import start_task, stream_task
 
 router = APIRouter()
 
@@ -107,3 +109,28 @@ async def get_task(
         )
 
     return DetailTaskResponse.model_validate(task)
+
+
+@router.post("/{uuid}/stream", summary="Получать обновления статуса задачи потоком")
+async def monitor_task(
+    request: Request,
+    uuid: Annotated[UUID, Path(...)],
+    data: Annotated[DetailTaskRequest, Body(...)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> EventSourceResponse:
+    """Получает информацию об обновлениях статуса задачи
+    в реальном времени, используя протокол SSE стриминга.
+    """
+
+    stmt = select(Task).where((Task.id == uuid) & (Task.user_id == data.user_id))
+    task = await db.execute(stmt)
+    task = task.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found.",
+        )
+
+    event_generator = stream_task(task, db, request)
+    return EventSourceResponse(event_generator)
