@@ -30,7 +30,7 @@ async def preprocess_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                f"{configs.service.preprocessing.URL}/",
+                f"{configs.services.preprocessing.URL}/",
                 files={
                     "file": (
                         "audio.pcm",

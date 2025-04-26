@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Annotated, List
 from uuid import UUID
 
@@ -10,9 +11,9 @@ from fastapi import (
     Form,
     HTTPException,
     Path,
+    Request,
     UploadFile,
     status,
-    Request,
 )
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,7 +66,8 @@ async def create_task(
     await db.commit()
     await db.refresh(created_task)
 
-    background.add_task(start_task, file.file, created_task, db)
+    bytestream = BytesIO(await file.read())
+    background.add_task(start_task, bytestream, created_task, db)
 
     return CreateTaskResponse.model_validate(created_task)
 
