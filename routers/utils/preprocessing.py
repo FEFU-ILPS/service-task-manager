@@ -1,4 +1,4 @@
-import asyncio
+from configs import configs
 from io import BytesIO
 
 import httpx
@@ -29,8 +29,20 @@ async def preprocess_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession
 
     async with httpx.AsyncClient() as client:
         try:
-            # TODO: Написать логику запроса на предобработку
-            await asyncio.sleep(15)  # Имитация обработки
+            response = await client.post(
+                f"{configs.service.preprocessing.URL}/",
+                files={
+                    "file": (
+                        "audio.pcm",
+                        audio_file.getvalue(),
+                        "application/octet-stream",
+                    )
+                },
+            )
+
+            response.raise_for_status()
+
+            return BytesIO(response.content)
 
         except httpx.HTTPStatusError as e:
             raise HTTPException(
