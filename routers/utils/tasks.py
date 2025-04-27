@@ -2,7 +2,9 @@ import asyncio
 from datetime import datetime, timezone
 from io import BytesIO
 from typing import AsyncGenerator
+
 from fastapi import HTTPException, Request
+from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Task
@@ -34,12 +36,14 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
         await db.commit()
 
     except HTTPException as e:
+        logger.error(e)
         task_obj.status = Status.FAILED
         detail = e.detail
         if isinstance(detail, str):
             task_obj.comment = detail
 
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         task_obj.status = Status.FAILED
 
     finally:
