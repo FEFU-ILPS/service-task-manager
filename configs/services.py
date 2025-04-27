@@ -26,3 +26,4 @@ def get_service_configuration(service_name: str) -> ServiceConfiguration:
 class ServicesConfiguration(BaseSettings):
     # * Вложенные группы настроек
     preprocessing: ServiceConfiguration = get_service_configuration("preprocessing")
+    transcribing: ServiceConfiguration = get_service_configuration("transcribing")
