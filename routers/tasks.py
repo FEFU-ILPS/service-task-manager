@@ -45,18 +45,6 @@ async def create_task(
     """Создаёт задачу на предобработку и транскрибирование аудиофайла.
     Возвращает UUID созданой задачи с ответом 200, выполняя её в фоне.
     """
-    if not file.filename.lower().endswith((".pcm", ".raw")):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid file extension. Only files with the extension are allowed.pcm or .raw.",
-        )
-
-    if file.content_type not in ["application/octet-stream", None]:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid content type. Only application/octet-stream is allowed for PCM files.",
-        )
-
     created_task = Task(
         user_id=user_id,
         text_id=text_id,
