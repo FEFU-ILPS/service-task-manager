@@ -27,3 +27,4 @@ class ServicesConfiguration(BaseSettings):
     # * Вложенные группы настроек
     preprocessing: ServiceConfiguration = get_service_configuration("preprocessing")
     transcribing: ServiceConfiguration = get_service_configuration("transcribing")
+    feedback: ServiceConfiguration = get_service_configuration("feedback")
