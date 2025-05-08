@@ -12,6 +12,7 @@ from database.types import Status
 
 from .preprocessing import preprocess_audio
 from .transcribing import transcribe_audio
+from .evaluating import evaluate_transcription
 
 
 async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
@@ -31,8 +32,12 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
 
         preprocessed_audio_file = await preprocess_audio(audio_file, task_obj, db)
         text_transcription = await transcribe_audio(preprocessed_audio_file, task_obj, db)
+        feedback = await evaluate_transcription(text_transcription, task_obj, db)
+
         task_obj.status = Status.COMPLETED
         task_obj.result = text_transcription
+        task_obj.accuracy = feedback.get("accuracy", 0.0)
+        task_obj.errors = feedback.get("errors")
         await db.commit()
 
     except HTTPException as e:
