@@ -4,14 +4,33 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from database.types import Status
-from .examples import ID_EXAMPLES, STATUS_EXAMPLE, RESULT_EXAMPLE
+from .examples import (
+    ID_EXAMPLES,
+    STATUS_EXAMPLES,
+    RESULT_EXAMPLES,
+    ACCURACY_EXAMPLES,
+    ERRORS_EXAMPLES,
+    COMMENTS_EXAMPLES,
+)
+
 
 TaskID = Annotated[UUID, Field(description="Уникальный идентификатор", examples=ID_EXAMPLES)]
 TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя", examples=ID_EXAMPLES)]
 TaskTextID = Annotated[UUID, Field(description="Идентификатор текста", examples=ID_EXAMPLES)]
-TaskStatus = Annotated[Status, Field(description="Статуст выполнения", examples=STATUS_EXAMPLE)]
+TaskStatus = Annotated[Status, Field(description="Статуст выполнения", examples=STATUS_EXAMPLES)]
 TaskResult = Annotated[
-    str | None, Field(description="Результат транскрибирования", examples=RESULT_EXAMPLE)
+    str | None, Field(description="Результат транскрибирования", examples=RESULT_EXAMPLES)
+]
+TaskResultAccuracy = Annotated[
+    float | None,
+    Field(description="Точность произношения", ge=0, le=100, examples=ACCURACY_EXAMPLES),
+]
+TaskResultErrors = Annotated[
+    list[dict[str, int | str | None]] | None,
+    Field(description="Ошибки произношения", examples=ERRORS_EXAMPLES),
+]
+TaskComment = Annotated[
+    str | None, Field(description="Комментарий к задаче", examples=COMMENTS_EXAMPLES)
 ]
 
 
@@ -56,3 +75,6 @@ class DetailTaskResponse(CreateTaskResponse):
     text_id: TaskTextID
     status: TaskStatus
     result: TaskResult
+    accuracy: TaskResultAccuracy
+    errors: TaskResultErrors
+    comment: TaskComment
