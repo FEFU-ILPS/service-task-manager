@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Index, CheckConstraint
 
 from .engine import BaseORM
-from .types import Status, PronunciationAssessment
+from .types import Status
 
 
 # TODO: Привязать к упражнению.
@@ -20,7 +20,6 @@ class Task(BaseORM):
     status = Column(Enum(Status), nullable=False, default=Status.CREATED)
     result = Column(Text, nullable=True, default=None)
     accuracy = Column(Float(3), nullable=True, default=None)
-    assessment = Column(Enum(PronunciationAssessment), nullable=True, default=None)
     errors = Column(JSON, nullable=True, default=None)
     created_at = Column(
         DateTime(timezone=True),
