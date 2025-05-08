@@ -49,5 +49,3 @@ async def preprocess_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession
                 status_code=e.response.status_code,
                 detail=e.response.json().get("detail", "Unknown error"),
             )
-
-    return audio_file
