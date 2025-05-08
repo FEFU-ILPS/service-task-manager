@@ -8,6 +8,16 @@ class Status(Enum):
     STARTED = "started"
     PREPROCESSING = "preprocessing"
     TRANSCRIBING = "transcribing"
+    EVALUATING = "evaluating"
     COMPLETED = "completed"
     FAILED = "failed"
     UNKNOWN = "unknown"
+
+
+class PronunciationAssessment(Enum):
+    """Список возможных оценок произношения."""
+
+    CORRECT = "Correct"
+    SATISFACTORY = "Satisfactory"
+    BAD = "Bad"
+    INCORRECT = "Incorrect"

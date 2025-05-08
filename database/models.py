@@ -1,22 +1,27 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Enum, DateTime, Text
+from sqlalchemy import Column, Enum, DateTime, Text, String, Float, JSON
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Index
+from sqlalchemy import Index, CheckConstraint
 
 from .engine import BaseORM
-from .types import Status
+from .types import Status, PronunciationAssessment
 
 
+# TODO: Привязать к упражнению.
 class Task(BaseORM):
     __tablename__ = "tasks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    status = Column(Enum(Status), nullable=False, default=Status.CREATED)
+    title = Column(String(50), nullable=False, default="Упражнение №-")
     user_id = Column(UUID(as_uuid=True), nullable=False)
     text_id = Column(UUID(as_uuid=True), nullable=False)
+    status = Column(Enum(Status), nullable=False, default=Status.CREATED)
     result = Column(Text, nullable=True, default=None)
+    accuracy = Column(Float(3), nullable=True, default=None)
+    assessment = Column(Enum(PronunciationAssessment), nullable=True, default=None)
+    errors = Column(JSON, nullable=True, default=None)
     created_at = Column(
         DateTime(timezone=True),
         nullable=False,
@@ -32,4 +37,5 @@ class Task(BaseORM):
     __table_args__ = (
         Index("task_text_id_idx", text_id, postgresql_using="hash"),
         Index("task_user_id_idx", user_id, postgresql_using="hash"),
+        CheckConstraint((accuracy >= 0.0) & (accuracy <= 100.0), name="check_accuracy"),
     )
