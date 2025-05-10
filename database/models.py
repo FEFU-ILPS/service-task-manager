@@ -9,12 +9,11 @@ from .engine import BaseORM
 from .types import Status
 
 
-# TODO: Привязать к упражнению.
 class Task(BaseORM):
     __tablename__ = "tasks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title = Column(String(50), nullable=False, default="Упражнение №-")
+    title = Column(String(50), nullable=False, default='№ - | "Упражнение" ')
     user_id = Column(UUID(as_uuid=True), nullable=False)
     text_id = Column(UUID(as_uuid=True), nullable=False)
     status = Column(Enum(Status), nullable=False, default=Status.CREATED)
