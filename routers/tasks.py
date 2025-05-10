@@ -37,6 +37,7 @@ router = APIRouter()
 @router.post("/transcribe", summary="Создать задачу на обработку аудио файла")
 async def create_task(
     file: Annotated[UploadFile, File(...)],
+    title: Annotated[str, Form(...)],
     user_id: Annotated[UUID, Form(...)],
     text_id: Annotated[UUID, Form(...)],
     background: BackgroundTasks,
@@ -46,6 +47,7 @@ async def create_task(
     Возвращает UUID созданой задачи с ответом 200, выполняя её в фоне.
     """
     created_task = Task(
+        title=title,
         user_id=user_id,
         text_id=text_id,
     )
