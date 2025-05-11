@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import Task
 from database.types import Status
 
+from .evaluating import evaluate_transcription
 from .preprocessing import preprocess_audio
 from .transcribing import transcribe_audio
-from .evaluating import evaluate_transcription
 
 
 async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):

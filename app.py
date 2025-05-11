@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from database import disconnect_db
-
 from routers import health_router, tasks_router
 
 

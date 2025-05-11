@@ -1,9 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Enum, DateTime, Text, String, Float, JSON
+from sqlalchemy import JSON, CheckConstraint, Column, DateTime, Enum, Float, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Index, CheckConstraint
 
 from .engine import BaseORM
 from .types import Status

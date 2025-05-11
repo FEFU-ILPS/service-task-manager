@@ -1,10 +1,10 @@
-from configs import configs
 from io import BytesIO
 
 import httpx
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from configs import configs
 from database.models import Task
 from database.types import Status
 

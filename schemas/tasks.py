@@ -4,15 +4,15 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from database.types import Status
-from .examples import (
-    ID_EXAMPLES,
-    STATUS_EXAMPLES,
-    RESULT_EXAMPLES,
-    ACCURACY_EXAMPLES,
-    ERRORS_EXAMPLES,
-    COMMENTS_EXAMPLES,
-)
 
+from .examples import (
+    ACCURACY_EXAMPLES,
+    COMMENTS_EXAMPLES,
+    ERRORS_EXAMPLES,
+    ID_EXAMPLES,
+    RESULT_EXAMPLES,
+    STATUS_EXAMPLES,
+)
 
 TaskID = Annotated[UUID, Field(description="Уникальный идентификатор", examples=ID_EXAMPLES)]
 TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя", examples=ID_EXAMPLES)]
