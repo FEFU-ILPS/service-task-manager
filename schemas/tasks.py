@@ -69,6 +69,7 @@ class DetailTaskResponse(CreateTaskResponse):
     по конкретной задаче.
     """
 
+    title: str = Field(description="Название упраженения", max_length=50)
     text_id: TaskTextID
     status: TaskStatus
     result: TaskResult
