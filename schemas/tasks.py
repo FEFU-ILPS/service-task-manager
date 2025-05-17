@@ -8,7 +8,7 @@ from database.types import Status
 from .examples import (
     ACCURACY_EXAMPLES,
     COMMENTS_EXAMPLES,
-    ERRORS_EXAMPLES,
+    MISTAKES_EXAMPLES,
     ID_EXAMPLES,
     RESULT_EXAMPLES,
     STATUS_EXAMPLES,
@@ -25,9 +25,9 @@ TaskResultAccuracy = Annotated[
     float | None,
     Field(description="Точность произношения", ge=0, le=100, examples=ACCURACY_EXAMPLES),
 ]
-TaskResultErrors = Annotated[
+TaskResultMistakes = Annotated[
     list[dict[str, int | str | None]] | None,
-    Field(description="Ошибки произношения", examples=ERRORS_EXAMPLES),
+    Field(description="Ошибки произношения", examples=MISTAKES_EXAMPLES),
 ]
 TaskComment = Annotated[
     str | None, Field(description="Комментарий к задаче", examples=COMMENTS_EXAMPLES)
@@ -76,5 +76,5 @@ class DetailTaskResponse(CreateTaskResponse):
     status: TaskStatus
     result: TaskResult
     accuracy: TaskResultAccuracy
-    errors: TaskResultErrors
+    mistakes: TaskResultMistakes
     comment: TaskComment

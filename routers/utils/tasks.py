@@ -37,7 +37,7 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
         task_obj.status = Status.COMPLETED
         task_obj.result = text_transcription
         task_obj.accuracy = feedback.get("accuracy", 0.0)
-        task_obj.errors = feedback.get("errors")
+        task_obj.mistakes = feedback.get("mistakes")
         await db.commit()
 
     except HTTPException as e:
