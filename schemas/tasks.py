@@ -15,7 +15,6 @@ from .examples import (
 )
 
 TaskID = Annotated[UUID, Field(description="Уникальный идентификатор", examples=ID_EXAMPLES)]
-TaskUserID = Annotated[UUID, Field(description="Идентификатор пользователя", examples=ID_EXAMPLES)]
 TaskTextID = Annotated[UUID, Field(description="Идентификатор текста", examples=ID_EXAMPLES)]
 TaskStatus = Annotated[Status, Field(description="Статуст выполнения", examples=STATUS_EXAMPLES)]
 TaskResult = Annotated[
@@ -37,7 +36,7 @@ TaskComment = Annotated[
 class TasksRequest(BaseModel):
     """Данные, необходимые для получения задач."""
 
-    user_id: TaskUserID
+    user_id: UUID = Field(description="Идентификатор пользователя", examples=ID_EXAMPLES)
 
 
 # *Не используется. Пришлось отказаться из-за особенностей загрузки файлов.
@@ -62,7 +61,6 @@ class CreateTaskResponse(BaseModel):
 class TasksResponse(CreateTaskResponse):
     """Данные, отправляемые в ответ на получение задач."""
 
-    user_id: TaskUserID
     status: TaskStatus
 
 
@@ -71,7 +69,6 @@ class DetailTaskResponse(CreateTaskResponse):
     по конкретной задаче.
     """
 
-    user_id: TaskUserID
     text_id: TaskTextID
     status: TaskStatus
     result: TaskResult
