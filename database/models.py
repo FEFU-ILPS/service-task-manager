@@ -9,6 +9,8 @@ from .types import Status
 
 
 class Task(BaseORM):
+    """ORM модель, описывающая общую задачу оценки произношения пользователя."""
+
     __tablename__ = "tasks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
