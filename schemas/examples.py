@@ -1,5 +1,3 @@
-from typing import Final
-
 ID_EXAMPLES = [
     "d08191a1-3a4f-48e3-be3b-fc3bb31536af",
     "3d5dc460-5db7-4dd0-9d4e-3cd825ebaebd",
@@ -26,7 +24,6 @@ ACCURACY_EXAMPLES = [
     0.02,
     74.01,
 ]
-
 
 MISTAKES_EXAMPLES = [
     [
