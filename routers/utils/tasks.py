@@ -3,12 +3,12 @@ from datetime import datetime, timezone
 from io import BytesIO
 from typing import AsyncGenerator
 
-from fastapi import HTTPException, Request
-from loguru import logger
+from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Task
 from database.types import Status
+from service_logging import logger
 
 from .evaluating import evaluate_transcription
 from .preprocessing import preprocess_audio
@@ -26,6 +26,7 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
         db (AsyncSession): Обьект сессии базы данных.
     """
     try:
+        logger.info("Starting pronunciation assessment pipeline...")
         db.add(task_obj)
         task_obj.status = Status.STARTED
         await db.commit()
@@ -40,16 +41,14 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
         task_obj.mistakes = feedback.get("mistakes")
         await db.commit()
 
-    except HTTPException as e:
-        logger.error(e)
-        task_obj.status = Status.FAILED
-        detail = e.detail
-        if isinstance(detail, str):
-            task_obj.comment = detail
+        logger.success(f"Pronunciation assessed. Accuracy {task_obj.accuracy}.")
 
-    except Exception as e:
-        logger.error(e)
+    except Exception as error:
+        details = f"Unknown error: {error}"
+        logger.error(details)
+
         task_obj.status = Status.FAILED
+        task_obj.comment = details
 
     finally:
         task_obj.completed_at = datetime.now(tz=timezone.utc)
@@ -75,6 +74,7 @@ async def stream_task(
     last_status = Status.UNKNOWN
     db.add(task_obj)
 
+    logger.info("Starting SSE stream...")
     while True:
         if await req.is_disconnected():
             break
@@ -82,6 +82,7 @@ async def stream_task(
         current_status = task_obj.status
 
         if current_status != last_status or not on_update:
+            logger.info(f"Sending update: {last_status} -> {current_status}")
             last_status = current_status
             event_data = {
                 "event": "status_updated" if on_update else "status_checked",
@@ -96,3 +97,5 @@ async def stream_task(
 
         await db.refresh(task_obj)
         await asyncio.sleep(1)
+
+    logger.info("SSE stream closed.")

@@ -1,12 +1,13 @@
 from typing import Any
 
-import httpx
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from configs import configs
 from database.models import Task
 from database.types import Status
+from service_logging import logger
+
+from .http_proxy import proxy_request
 
 
 async def evaluate_transcription(
@@ -26,22 +27,11 @@ async def evaluate_transcription(
     task_obj.status = Status.EVALUATING
     await db.commit()
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                f"{configs.services.feedback.URL}/",
-                json={
-                    "text_id": str(task_obj.text_id),
-                    "actual_result": transcription,
-                },
-            )
+    logger.info("Evaluating tanscription....")
+    async with proxy_request(configs.services.feedback.URL) as client:
+        response = await client.post(
+            "/", json={"text_id": str(task_obj.text_id), "actual_result": transcription}
+        )
+        response.raise_for_status()
 
-            response.raise_for_status()
-
-            return response.json()
-
-        except httpx.HTTPStatusError as e:
-            raise HTTPException(
-                status_code=e.response.status_code,
-                detail=e.response.json().get("detail", "Unknown error"),
-            )
+        return response.json()

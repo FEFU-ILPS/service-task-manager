@@ -1,12 +1,14 @@
 from io import BytesIO
 
-import httpx
-from fastapi import HTTPException
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from configs import configs
 from database.models import Task
 from database.types import Status
+
+from .http_proxy import proxy_request
+from service_logging import logger
 
 
 async def transcribe_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession) -> str:
@@ -27,27 +29,13 @@ async def transcribe_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession
     task_obj.status = Status.TRANSCRIBING
     await db.commit()
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                f"{configs.services.transcribing.URL}/",
-                # TODO: Позже адаптировать возможнсть выбора других языков
-                data={"lang": "english"},
-                files={
-                    "file": (
-                        "audio.wav",
-                        audio_file.getvalue(),
-                        "audio/wav",
-                    )
-                },
-            )
+    logger.info("Transcribing audio file....")
+    async with proxy_request(configs.services.transcribing.URL) as client:
+        response = await client.post(
+            "/",
+            data={"lang": "english"},
+            files={"file": ("audio.wav", audio_file.getvalue(), "audio/wav")},
+        )
+        response.raise_for_status()
 
-            response.raise_for_status()
-
-            return response.json()["transcription"]
-
-        except httpx.HTTPStatusError as e:
-            raise HTTPException(
-                status_code=e.response.status_code,
-                detail=e.response.json().get("detail", "Unknown error"),
-            )
+        return response.json()["transcription"]
