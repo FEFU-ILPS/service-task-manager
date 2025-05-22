@@ -28,6 +28,7 @@ from schemas.tasks import (
     TasksRequest,
     TasksResponse,
 )
+from service_logging import logger
 
 from .utils.tasks import start_task, stream_task
 
@@ -46,6 +47,7 @@ async def create_task(
     """Создаёт задачу на предобработку и транскрибирование аудиофайла.
     Возвращает UUID созданой задачи с ответом 200, выполняя её в фоне.
     """
+    logger.info("Creating a pronunciation assessment task...")
     created_task = Task(
         title=title,
         user_id=user_id,
@@ -59,7 +61,10 @@ async def create_task(
     bytestream = BytesIO(await file.read())
     background.add_task(start_task, bytestream, created_task, db)
 
-    return CreateTaskResponse.model_validate(created_task)
+    item = CreateTaskResponse.model_validate(created_task)
+    logger.success(f"Task has been created: {item.id}")
+
+    return item
 
 
 # * GET был заменен на POST ради Body
@@ -70,11 +75,15 @@ async def get_tasks(
 ) -> List[TasksResponse]:
     """Получает список всех задач, когда либо созданных в системе ILPS."""
 
+    logger.info("Getting the task list...")
     stmt = select(Task).where(Task.user_id == data.user_id)
     tasks = await db.execute(stmt)
     tasks = tasks.scalars().all()
 
-    return [TasksResponse.model_validate(task) for task in tasks]
+    items = [TasksResponse.model_validate(task) for task in tasks]
+    logger.success(f"Received {len(items)} tasks.")
+
+    return items
 
 
 # * GET был заменен на POST ради Body
@@ -88,17 +97,23 @@ async def get_task(
     Возвращает полную информацию о задача.
     """
 
+    logger.info("Getting information about a task...")
     stmt = select(Task).where((Task.id == uuid) & (Task.user_id == data.user_id))
     task = await db.execute(stmt)
     task = task.scalar_one_or_none()
 
     if not task:
+        detail = "Task not found."
+        logger.error(detail)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Task not found.",
+            detail=detail,
         )
 
-    return DetailTaskResponse.model_validate(task)
+    item = DetailTaskResponse.model_validate(task)
+    logger.success(f"Task found: {item.id}")
+
+    return item
 
 
 @router.post("/{uuid}/stream", summary="Получать обновления статуса задачи потоком")
@@ -112,15 +127,19 @@ async def monitor_task(
     в реальном времени, используя протокол SSE стриминга.
     """
 
+    logger.info("Getting information about a task...")
     stmt = select(Task).where((Task.id == uuid) & (Task.user_id == data.user_id))
     task = await db.execute(stmt)
     task = task.scalar_one_or_none()
 
     if not task:
+        detail = "Task not found."
+        logger.error(detail)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Task not found.",
+            detail=detail,
         )
 
+    logger.info("Streaming task status updates....")
     event_generator = stream_task(task, db, request)
     return EventSourceResponse(event_generator)
