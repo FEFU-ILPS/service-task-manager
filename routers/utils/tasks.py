@@ -45,6 +45,8 @@ async def start_task(audio_file: BytesIO, task_obj: Task, db: AsyncSession):
 
     except Exception as error:
         details = f"Unknown error: {error}"
+        logger.debug(type(error))
+        logger.debug(error.__traceback__)
         logger.error(details)
 
         task_obj.status = Status.FAILED
