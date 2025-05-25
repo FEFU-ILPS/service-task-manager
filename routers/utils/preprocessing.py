@@ -31,7 +31,9 @@ async def preprocess_audio(audio_file: BytesIO, task_obj: Task, db: AsyncSession
     logger.info("Preprocessing audio file....")
     async with proxy_request(configs.services.preprocessing.URL) as client:
         response = await client.post(
-            "/", files={"file": ("audio.pcm", audio_file.getvalue(), "application/octet-stream")}
+            "/",
+            files={"file": ("audio.pcm", audio_file.getvalue(), "application/octet-stream")},
+            timeout=60.0,
         )
         response.raise_for_status()
 
