@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TypedDict
 from uuid import UUID
 
@@ -8,6 +9,7 @@ from database.types import Status
 from .examples import (
     ACCURACY_EXAMPLES,
     COMMENTS_EXAMPLES,
+    CREATED_AT_EXAMPLES,
     ID_EXAMPLES,
     MISTAKES_EXAMPLES,
     RESULT_EXAMPLES,
@@ -61,6 +63,11 @@ class TasksResponse(BaseSchema):
 
     id: UUID = Field(description="Уникальный идентификатор", examples=ID_EXAMPLES)
     status: Status = Field(description="Статуст выполнения", examples=STATUS_EXAMPLES)
+    title: str = Field(description="Название упраженения", max_length=50)
+    accuracy: float | None = Field(
+        description="Точность произношения", ge=0, le=100, examples=ACCURACY_EXAMPLES
+    )
+    created_at: datetime = Field(description="Время создания задачи", examples=CREATED_AT_EXAMPLES)
 
 
 class DetailTaskResponse(BaseSchema):
