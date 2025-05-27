@@ -76,7 +76,7 @@ async def get_tasks(
     """Получает список всех задач, когда либо созданных в системе ILPS."""
 
     logger.info("Getting the task list...")
-    stmt = select(Task).where(Task.user_id == data.user_id)
+    stmt = select(Task).where(Task.user_id == data.user_id).order_by(Task.created_at.desc())
     tasks = await db.execute(stmt)
     tasks = tasks.scalars().all()
 
